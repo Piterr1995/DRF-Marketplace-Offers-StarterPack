@@ -25,7 +25,7 @@ class ArticleDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ArticleSerializer
 
 
-class ImageDetailView(generics.RetrieveDestroyAPIView):
+class ImageDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Image.objects.all()
     serializer_class = MultiImageSerializer
     lookup_field = "pk"

@@ -23,6 +23,7 @@ class ArticleSerializer(serializers.Serializer):
     author_username = serializers.SerializerMethodField()
     images = MultiImageSerializer(many=True, required=False)
     delete_images_pk = serializers.ListField(required=False)
+    delete_images_display_order = serializers.ListField(required=False)
 
     def get_author_username(self, instance):
         return instance.author.username
@@ -44,8 +45,16 @@ class ArticleSerializer(serializers.Serializer):
         instance.description = vd.get("description", instance.title)
         instance.updated = timezone.now()
         delete_images_pk = vd.get("delete_images_pk")
+        delete_images_display_order = vd.get("delete_images_display_order")
         if delete_images_pk:
             for image_pk in delete_images_pk:
                 Image.objects.get(pk=image_pk).delete()
-
+        if delete_images_display_order:
+            for image_display_order in delete_images_display_order:
+                Image.objects.get(article=instance, display_order=image_display_order).delete()
+        if images:
+            for image in images:
+                display_order = len(instance.images.all()) + 1
+                Image.objects.create(article=instance, image=image, display_order=display_order)
+        pdb.set_trace()
         return instance
